@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#63253e">
+    <meta name="description" content="Lume: livros que te acompanham em todas as histórias. Explore o catálogo e encontre sua próxima leitura.">
+    <title>Lume · Livros e boas histórias</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <script src="catalogo.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <div class="announcement">
+        <p><svg aria-hidden="true"><use href="assets/icons.svg#truck"></use></svg> Uma boa história vai até você. <strong>Frete grátis a partir de R$ 99</strong></p>
+    </div>
+    <header class="site-header">
+        <div class="header-inner container">
+            <a class="brand" href="#inicio" aria-label="Lume, página inicial">
+                <svg aria-hidden="true"><use href="assets/icons.svg#brand"></use></svg>
+                <span>Lume<small>LIVROS & BOAS HISTÓRIAS</small></span>
+            </a>
+            <nav class="desktop-nav" aria-label="Navegação principal">
+                <a href="#inicio" data-nav="inicio">Início</a>
+                <a href="#catalogo" data-nav="catalogo">Explorar livros</a>
+                <a href="#favoritos" data-nav="favoritos">Favoritos</a>
+                <a href="#leitura" data-nav="leitura">Minha leitura</a>
+            </nav>
+            <div class="header-actions">
+                <a class="icon-button notifications-link" href="#notificacoes" aria-label="Notificações"><svg aria-hidden="true"><use href="assets/icons.svg#bell"></use></svg><span class="notification-dot"></span></a>
+                <a class="icon-button" href="#carrinho" aria-label="Carrinho"><svg aria-hidden="true"><use href="assets/icons.svg#bag"></use></svg><span class="cart-badge" id="cart-count" hidden>0</span></a>
+                <a class="profile-link" href="#perfil" aria-label="Meu perfil"><span class="avatar avatar-small" aria-hidden="true">A</span><span class="profile-label">Minha conta</span></a>
+            </div>
+        </div>
+    </header>
+    <main class="container main-content" id="conteudo" tabindex="-1"></main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <a class="footer-brand" href="#inicio">Lume<span>Livros que te acompanham em todas as histórias.</span></a>
+            <nav aria-label="Links do rodapé"><a href="#suporte">Ajuda e suporte</a><a href="#cupons">Cupons e descontos</a><a href="#fontes">Fontes e preços</a></nav>
+            <p>Feito para quem ama virar a página.<small>Protótipo demonstrativo · sem vendas ou pagamentos reais.</small></p>
+        </div>
+    </footer>
+    <nav class="bottom-nav" aria-label="Navegação no celular">
+        <a href="#inicio" data-mobile-nav="inicio"><svg aria-hidden="true"><use href="assets/icons.svg#home"></use></svg><span>Início</span></a>
+        <a href="#catalogo" data-mobile-nav="catalogo"><svg aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Categorias</span></a>
+        <a href="#favoritos" data-mobile-nav="favoritos"><svg aria-hidden="true"><use href="assets/icons.svg#heart"></use></svg><span>Favoritos</span></a>
+        <a href="#carrinho" data-mobile-nav="carrinho"><svg aria-hidden="true"><use href="assets/icons.svg#bag"></use></svg><span>Carrinho</span><span class="mobile-cart-dot" hidden></span></a>
+        <a href="#perfil" data-mobile-nav="perfil"><svg aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>Perfil</span></a>
+    </nav>
+    <dialog class="filter-dialog" id="filter-dialog" aria-labelledby="filter-title">
+        <form id="filter-form">
+            <header class="dialog-heading"><h2 id="filter-title">Filtros</h2><button class="icon-button" type="button" data-action="close-filters" aria-label="Fechar filtros"><svg aria-hidden="true"><use href="assets/icons.svg#close"></use></svg></button></header>
+            <fieldset><legend>Gêneros</legend><div class="filter-genres" id="filter-genres"></div></fieldset>
+            <fieldset><legend>Preço máximo</legend><div class="range-labels"><span>R$ 0</span><output id="price-output" for="max-price">R$ 200</output></div><input type="range" name="price" id="max-price" aria-label="Preço máximo em reais" min="0" max="200" value="200" step="5"></fieldset>
+            <fieldset><legend>Avaliação</legend><label class="rating-filter"><input type="checkbox" name="rating" value="4.8"><span aria-hidden="true">★★★★★</span> 4,8 e acima</label></fieldset>
+            <fieldset><legend>Formato</legend><div class="filter-formats"><label><input type="radio" name="format" value="Todos" checked><span>Todos</span></label><label><input type="radio" name="format" value="Físico"><span>Físico</span></label><label><input type="radio" name="format" value="E-book"><span>E-book</span></label><label><input type="radio" name="format" value="Audiolivro"><span>Audiolivro</span></label></div></fieldset>
+            <footer class="dialog-actions"><button class="button button-ghost" type="reset">Limpar filtros</button><button class="button button-primary" type="submit">Aplicar filtros</button></footer>
+        </form>
+    </dialog>
+    <dialog class="review-dialog" id="review-dialog" aria-labelledby="review-title">
+        <form id="review-form">
+            <header class="dialog-heading"><h2 id="review-title">Avaliação e comentário</h2><button class="icon-button" type="button" data-action="close-review" aria-label="Fechar avaliação"><svg aria-hidden="true"><use href="assets/icons.svg#close"></use></svg></button></header>
+            <p>Compartilhe o que achou desta história.</p>
+            <fieldset class="review-stars"><legend>Sua avaliação</legend><div class="star-options"></div></fieldset>
+            <label for="review-text">Seu comentário</label><textarea id="review-text" name="comment" maxlength="500" rows="5" placeholder="Escreva o que você achou do livro..." required></textarea><p class="field-hint">Até 500 caracteres. Sua avaliação fica salva neste navegador.</p>
+            <button class="button button-primary full-width" type="submit">Enviar avaliação</button>
+        </form>
+    </dialog>
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript-message">Ative o JavaScript do navegador para explorar o catálogo da Lume.</p></noscript>
+</body>
+</html>
