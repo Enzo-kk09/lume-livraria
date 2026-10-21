@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#63253e">
+    <meta name="description" content="Lume: livros que te acompanham em todas as histórias. Explore o catálogo e encontre sua próxima leitura.">
+    <title>Livro · Lume</title>
+    <link rel="icon" href="imagens/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <script src="livro.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <div class="announcement">
+        <p><svg aria-hidden="true"><use href="imagens/icons.svg#truck"></use></svg> Uma boa história vai até você. <strong>Frete grátis a partir de R$ 99</strong></p>
+    </div>
+    <header class="site-header">
+        <div class="header-inner container">
+            <a class="brand" href="index.html" aria-label="Lume, página inicial">
+                <svg aria-hidden="true"><use href="imagens/icons.svg#brand"></use></svg>
+                <span>Lume<small>LIVROS & BOAS HISTÓRIAS</small></span>
+            </a>
+            <nav class="desktop-nav" aria-label="Navegação principal">
+                <a href="index.html" data-nav="inicio">Início</a>
+                <a href="catalogo.html" data-nav="catalogo">Explorar livros</a>
+                <a href="favoritos.html" data-nav="favoritos">Favoritos</a>
+                <a href="leitura.html" data-nav="leitura">Minha leitura</a>
+            </nav>
+            <div class="header-actions">
+                <a class="icon-button notifications-link" href="notificacoes.html" aria-label="Notificações"><svg aria-hidden="true"><use href="imagens/icons.svg#bell"></use></svg><span class="notification-dot"></span></a>
+                <a class="icon-button" href="carrinho.html" aria-label="Carrinho"><svg aria-hidden="true"><use href="imagens/icons.svg#bag"></use></svg><span class="cart-badge" id="cart-count" hidden>0</span></a>
+                <a class="profile-link" href="perfil.html" aria-label="Meu perfil"><span class="avatar avatar-small" aria-hidden="true">A</span><span class="profile-label">Minha conta</span></a>
+            </div>
+        </div>
+    </header>
+    <main class="container main-content" id="conteudo" tabindex="-1"><nav class="breadcrumb" aria-label="Caminho da página"><a href="index.html">Início</a><svg aria-hidden="true"><use href="imagens/icons.svg#chevron"></use></svg><a href="catalogo.html">Livros</a><svg aria-hidden="true"><use href="imagens/icons.svg#chevron"></use></svg><span>É assim que começa</span></nav>
+    <article class="product-layout"><div class="product-visual"><img src="imagens/e-assim-que-comeca.webp" alt="Capa de É assim que começa" width="265" height="380"><button class="icon-button favorite-button" type="button" data-action="favorite" data-id="e-assim-que-comeca" aria-pressed="false" aria-label="Adicionar É assim que começa aos favoritos"><svg aria-hidden="true"><use href="imagens/icons.svg#heart"></use></svg></button></div><div class="product-information"><span class="eyebrow">Uma história para sua estante</span><h1>É assim que começa</h1><p class="product-author">Colleen Hoover</p><span class="book-rating" title="Nota ilustrativa da referência, não uma avaliação verificada" aria-label="Nota ilustrativa: 4.8"><svg aria-hidden="true"><use href="imagens/icons.svg#star"></use></svg>4.8</span><div class="chip-row"><a class="tag" href="catalogo.html?genero=Romance">Romance</a><a class="tag" href="catalogo.html?genero=Fic%C3%A7%C3%A3o">Ficção</a></div><p class="product-price">R$ 64,90</p><p class="source-note">Preço de referência · <a href="https://www.record.com.br/products/e-assim-que-comeca-vol-2-e-assim-que-acaba" target="_blank" rel="noopener noreferrer">Grupo Editorial Record</a> · 16/10/2026</p><p class="source-note">Brochura · vol. 2</p><div class="product-buttons"><button class="button button-primary" type="button" data-action="add" data-id="e-assim-que-comeca"><svg aria-hidden="true"><use href="imagens/icons.svg#bag"></use></svg>Adicionar ao carrinho</button><button class="button button-secondary" type="button" data-action="buy" data-id="e-assim-que-comeca" >Comprar agora<svg aria-hidden="true"><use href="imagens/icons.svg#arrow"></use></svg></button></div><a class="text-link" href="leitura.html" data-action="start-reading" data-id="e-assim-que-comeca"><svg aria-hidden="true"><use href="imagens/icons.svg#book"></use></svg>Adicionar à minha leitura</a><section class="description"><h2>Sobre esta história</h2><p>Lily tenta reconstruir sua vida e reencontra Atlas, seu amor da adolescência. Entre os desafios da separação e uma nova chance de amar, os dois precisam encontrar espaço para um recomeço.</p></section><dl class="book-details"><div><dt>Editora</dt><dd>Galera</dd></div><div><dt>Páginas</dt><dd>336</dd></div><div><dt>Formato</dt><dd>Brochura · vol. 2</dd></div><div><dt>ISBN</dt><dd>9786559811397</dd></div></dl></div></article>
+    <section class="reviews-section"><header class="section-heading"><div><h2>Entre leitores</h2><p>Suas impressões ficam salvas neste navegador.</p></div><button class="button button-ghost" type="button" data-action="review" data-id="e-assim-que-comeca">Avaliar livro</button></header><p>Termine a leitura e conte o que achou. Toda história merece uma boa conversa.</p></section></main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <a class="footer-brand" href="index.html">Lume<span>Livros que te acompanham em todas as histórias.</span></a>
+            <nav aria-label="Links do rodapé"><a href="suporte.html">Ajuda e suporte</a><a href="cupons.html">Cupons e descontos</a><a href="fontes.html">Fontes e preços</a></nav>
+            <p>Feito para quem ama virar a página.<small>Protótipo demonstrativo · sem vendas ou pagamentos reais.</small></p>
+        </div>
+    </footer>
+    <nav class="bottom-nav" aria-label="Navegação no celular">
+        <a href="index.html" data-mobile-nav="inicio"><svg aria-hidden="true"><use href="imagens/icons.svg#home"></use></svg><span>Início</span></a>
+        <a href="catalogo.html" data-mobile-nav="catalogo"><svg aria-hidden="true"><use href="imagens/icons.svg#grid"></use></svg><span>Categorias</span></a>
+        <a href="favoritos.html" data-mobile-nav="favoritos"><svg aria-hidden="true"><use href="imagens/icons.svg#heart"></use></svg><span>Favoritos</span></a>
+        <a href="carrinho.html" data-mobile-nav="carrinho"><svg aria-hidden="true"><use href="imagens/icons.svg#bag"></use></svg><span>Carrinho</span><span class="mobile-cart-dot" hidden></span></a>
+        <a href="perfil.html" data-mobile-nav="perfil"><svg aria-hidden="true"><use href="imagens/icons.svg#user"></use></svg><span>Perfil</span></a>
+    </nav>
+    <dialog class="review-dialog" id="review-dialog" aria-labelledby="review-title">
+        <form id="review-form">
+            <header class="dialog-heading"><h2 id="review-title">Avaliação e comentário</h2><button class="icon-button" type="button" data-action="close-review" aria-label="Fechar avaliação"><svg aria-hidden="true"><use href="imagens/icons.svg#close"></use></svg></button></header>
+            <p>Compartilhe o que achou desta história.</p>
+            <fieldset class="review-stars"><legend>Sua avaliação</legend><div class="star-options"></div></fieldset>
+            <label for="review-text">Seu comentário</label><textarea id="review-text" name="comment" maxlength="500" rows="5" placeholder="Escreva o que você achou do livro..." required></textarea><p class="field-hint">Até 500 caracteres. Sua avaliação fica salva neste navegador.</p>
+            <button class="button button-primary full-width" type="submit">Enviar avaliação</button>
+        </form>
+    </dialog>
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript-message">Ative o JavaScript do navegador para explorar o catálogo da Lume.</p></noscript>
+</body>
+</html>

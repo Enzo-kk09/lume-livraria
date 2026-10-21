@@ -1,6 +1,9 @@
 'use strict';
 
-window.LUME_BOOKS = [
+// Comportamento da página catalogo.html.
+
+
+const books = [
     {
         "id": "e-assim-que-comeca",
         "title": "É assim que começa",
@@ -214,3 +217,311 @@ window.LUME_BOOKS = [
         "checkedAt": "2026-10-16"
     }
 ];
+
+const main = document.querySelector('#conteudo');
+const filterDialog = document.querySelector('#filter-dialog');
+const reviewDialog = document.querySelector('#review-dialog');
+const storageKey = 'lume-livraria-v1';
+const genres = ['Romance', 'Fantasia', 'Suspense', 'Ficção', 'Clássicos'];
+const genreIcons = ['heart', 'sparkles', 'moon', 'book', 'more'];
+const money = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100);
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const icon = name => `<svg aria-hidden="true"><use href="imagens/icons.svg#${name}"></use></svg>`;
+const getBook = id => books.find(book => book.id === id);
+const defaultState = { cart: [], favorites: [], orders: [], reading: [], reviews: [], profile: { name: 'Ana', email: '' }, goal: 24, address: {}, payment: 'Pix', coupon: '' };
+let state = loadState();
+let toastTimer;
+let reviewBookId;
+let currentStep = 1;
+let filters = { genres: [], price: 200, rating: false, format: 'Todos' };
+let sort = 'featured';
+let storageAvailable = true;
+
+
+const pageName = 'catalogo';
+
+function pageUrl(route){
+ const [path, query = ''] = route.replace(/^#/, '').split('?');
+ const [name, id] = path.split('/');
+ const file = name === 'inicio' ? 'index' : name;
+ const params = new URLSearchParams(query);
+ if(id) params.set('id', id);
+ const search = params.toString();
+ return file + '.html' + (search ? '?' + search : '');
+}
+function pageLinks(markup){
+ return markup.replace(/href="#(inicio|catalogo|livro|carrinho|checkout|pagamento|revisao|confirmado|favoritos|perfil|pedidos|notificacoes|cupons|leitura|suporte|fontes|enderecos|configuracoes)([^"\s]*)"/g, (_, name, rest) => 'href="' + pageUrl(name + rest) + '"');
+}
+function getRoute(){
+ const params = new URLSearchParams(location.search);
+ return {path: pageName, parts: [pageName, params.get('id')], params};
+}
+function navigate(route){
+ const target = new URL(pageUrl(route), location.href);
+ if(target.href === location.href) render();
+ else location.assign(target.href);
+}
+
+function loadState(){
+    try{
+        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+        if(!saved || typeof saved !== 'object') return structuredClone(defaultState);
+        const restored = { ...structuredClone(defaultState), ...saved };
+        restored.cart = Array.isArray(saved.cart) ? saved.cart.filter(item => item && getBook(item.id) && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 99) : [];
+        restored.favorites = Array.isArray(saved.favorites) ? [...new Set(saved.favorites.filter(id => getBook(id)))] : [];
+        restored.orders = Array.isArray(saved.orders) ? saved.orders.filter(order => order && Array.isArray(order.items) && order.items.every(item => item && getBook(item.id) && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 99) && Number.isFinite(order.total) && Number.isFinite(order.subtotal) && Number.isFinite(order.shipping) && Number.isFinite(order.discount) && !Number.isNaN(Date.parse(order.date))) : [];
+        restored.reading = Array.isArray(saved.reading) ? saved.reading.filter(item => item && getBook(item.id) && Number.isInteger(item.page) && item.page >= 0 && item.page <= getBook(item.id).pages) : [];
+        restored.reviews = Array.isArray(saved.reviews) ? saved.reviews.filter(review => review && getBook(review.bookId) && Number.isInteger(review.rating) && review.rating >= 1 && review.rating <= 5 && typeof review.comment === 'string') : [];
+        restored.profile = { name: typeof saved.profile?.name === 'string' ? saved.profile.name.slice(0, 60) : 'Ana', email: typeof saved.profile?.email === 'string' ? saved.profile.email.slice(0, 120) : '' };
+        restored.address = saved.address && typeof saved.address === 'object' && !Array.isArray(saved.address) ? saved.address : {};
+        restored.payment = ['Pix', 'Cartão de crédito', 'Boleto bancário'].includes(saved.payment) ? saved.payment : 'Pix';
+        restored.goal = Number.isInteger(saved.goal) && saved.goal >= 1 && saved.goal <= 365 ? saved.goal : 24;
+        restored.coupon = ['BEMVINDO', 'LIVRO10'].includes(saved.coupon) ? saved.coupon : '';
+        return restored;
+    }catch{
+        return structuredClone(defaultState);
+    }
+}
+
+function saveState(){
+    try{
+        localStorage.setItem(storageKey, JSON.stringify(state));
+    }catch{
+        storageAvailable = false;
+    }
+    updateShell();
+}
+
+function toast(message){
+    const element = document.querySelector('#toast');
+    element.textContent = message;
+    element.classList.add('visible');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => element.classList.remove('visible'), 3300);
+}
+
+function updateShell(){
+    const count = state.cart.reduce((total, item) => total + item.quantity, 0);
+    const badge = document.querySelector('#cart-count');
+    badge.textContent = count;
+    badge.hidden = !count;
+    document.querySelector('.mobile-cart-dot').hidden = !count;
+    document.querySelector('.avatar-small').textContent = state.profile.name.charAt(0).toUpperCase() || 'L';
+    const route = getRoute().parts[0];
+    const profileRoutes = ['perfil', 'pedidos', 'cupons', 'suporte', 'notificacoes', 'leitura', 'enderecos', 'configuracoes'];
+    document.querySelectorAll('[data-nav]').forEach(link => {
+        const selected = link.dataset.nav === route || link.dataset.nav === 'catalogo' && route === 'livro';
+        if(selected) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+    });
+    document.querySelectorAll('[data-mobile-nav]').forEach(link => {
+        const selected = link.dataset.mobileNav === route || link.dataset.mobileNav === 'perfil' && profileRoutes.includes(route) || link.dataset.mobileNav === 'catalogo' && route === 'livro' || link.dataset.mobileNav === 'carrinho' && ['checkout', 'pagamento', 'revisao', 'confirmado'].includes(route);
+        if(selected) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+    });
+}
+
+function pageHeading(title, subtitle = '', action = ''){
+    return `<header class="page-heading"><div><h1>${title}</h1>${subtitle ? `<p>${subtitle}</p>` : ''}</div>${action}</header>`;
+}
+
+function searchForm(query = ''){
+    return `<form class="search-form" data-form="search" role="search"><label class="visually-hidden" for="book-search">Buscar por título, autor ou gênero</label>${icon('search')}<input type="search" id="book-search" name="q" placeholder="Buscar livros, autores, gêneros..." value="${escapeHtml(query)}" maxlength="100" autocomplete="off"><button type="submit" aria-label="Buscar">${icon('arrow')}</button></form>`;
+}
+
+function favoriteButton(book, extra = ''){
+    const selected = state.favorites.includes(book.id);
+    return `<button class="icon-button ${extra}" type="button" data-action="favorite" data-id="${book.id}" aria-pressed="${selected}" aria-label="${selected ? 'Remover' : 'Adicionar'} ${escapeHtml(book.title)} ${selected ? 'dos' : 'aos'} favoritos">${icon('heart')}</button>`;
+}
+
+function rating(book){
+    return `<span class="book-rating" title="Nota ilustrativa da referência, não uma avaliação verificada" aria-label="Nota ilustrativa: ${book.rating}">${icon('star')}${book.rating.toFixed(1)}</span>`;
+}
+
+function bookCard(book){
+    return `<li><article class="book-card">${favoriteButton(book, 'favorite-button')}<a class="book-image-link" href="#livro/${book.id}" aria-label="Ver ${escapeHtml(book.title)}"><img src="imagens/${book.id}.webp" alt="Capa de ${escapeHtml(book.title)}, de ${escapeHtml(book.author)}" width="160" height="220" loading="lazy"></a><h3><a href="#livro/${book.id}">${book.title}</a></h3><p class="book-author">${book.author}</p><div class="book-price-row"><span class="book-price">${money(book.price)}</span>${rating(book)}</div><button class="quick-add" type="button" data-action="add" data-id="${book.id}">${book.available === false ? 'Indisponível na fonte' : 'Adicionar ao carrinho'}</button></article></li>`;
+}
+
+function bookGrid(items, extra = ''){
+    return `<ul class="book-grid ${extra}">${items.map(bookCard).join('')}</ul>`;
+}
+
+function priceCaption(){
+    return `<p class="price-caption">Preços de referência pesquisados em 16/10/2026. <a href="#fontes">Consultar fontes e edições.</a></p>`;
+}
+
+function emptyState(title, message, symbol = 'book', button = 'Explorar livros', route = 'catalogo'){
+    return `<section class="empty-state">${icon(symbol)}<h2>${title}</h2><p>${message}</p><a class="button button-primary" href="#${route}">${button}${icon('arrow')}</a></section>`;
+}
+
+
+
+
+
+
+
+function addToCart(id){
+    const book = getBook(id);
+    if(!book) return false;
+    if(book.available === false){
+        toast('Esta edição está esgotada na fonte consultada.');
+        return false;
+    }
+    const existing = state.cart.find(item => item.id === id);
+    if(existing && existing.quantity >= 99){
+        toast('Você já atingiu o limite de 99 exemplares.');
+        return false;
+    }
+    if(existing) existing.quantity++;
+    else state.cart.push({ id, quantity: 1 });
+    saveState();
+    toast(`${book.title} adicionado ao carrinho.`);
+    return true;
+}
+
+function openDialog(dialog){
+    dialog.showModal();
+    document.body.classList.add('dialog-open');
+}
+
+function closeDialog(dialog){
+    dialog.close();
+    document.body.classList.remove('dialog-open');
+}
+
+function openFilters(){
+    const form = document.querySelector('#filter-form');
+    document.querySelector('#filter-genres').innerHTML = genres.map(genre => `<label><input type="checkbox" name="genre" value="${genre}" ${filters.genres.includes(genre) ? 'checked' : ''}><span>${genre}</span></label>`).join('');
+    form.elements.price.value = filters.price;
+    form.elements.rating.checked = filters.rating;
+    form.elements.format.value = filters.format;
+    document.querySelector('#price-output').textContent = money(filters.price * 100);
+    openDialog(filterDialog);
+}
+function catalogView(params){
+    const query = (params.get('q') || '').slice(0, 100);
+    const genre = params.get('genero') || '';
+    let items = books.filter(book => {
+        const matchesQuery = !query || normalize(`${book.title} ${book.author} ${book.genres.join(' ')}`).includes(normalize(query));
+        const matchesGenre = !genre || book.genres.includes(genre);
+        const matchesFilters = (!filters.genres.length || filters.genres.some(value => book.genres.includes(value))) && book.price <= filters.price * 100 && (!filters.rating || book.rating >= 4.8) && (filters.format === 'Todos' || filters.format === 'Físico');
+        return matchesQuery && matchesGenre && matchesFilters;
+    });
+    if(sort === 'price-asc') items.sort((a, b) => a.price - b.price);
+    if(sort === 'price-desc') items.sort((a, b) => b.price - a.price);
+    if(sort === 'title') items.sort((a, b) => a.title.localeCompare(b.title, 'pt-BR'));
+    const filterCount = filters.genres.length + Number(filters.price < 200) + Number(filters.rating) + Number(filters.format !== 'Todos');
+    return `${pageHeading(query ? `Resultados para “${escapeHtml(query)}”` : 'Sua próxima história', 'Explore livros para todos os seus momentos.')}
+    <div class="catalog-toolbar">${searchForm(query)}<button class="button button-ghost filter-button" type="button" data-action="filters" aria-haspopup="dialog">${icon('filter')}<span>Filtros${filterCount ? ` (${filterCount})` : ''}</span></button><label class="sort-label" for="book-sort">Ordenar por <select id="book-sort" data-action="sort"><option value="featured" ${sort === 'featured' ? 'selected' : ''}>Destaques</option><option value="price-asc" ${sort === 'price-asc' ? 'selected' : ''}>Menor preço</option><option value="price-desc" ${sort === 'price-desc' ? 'selected' : ''}>Maior preço</option><option value="title" ${sort === 'title' ? 'selected' : ''}>Título A–Z</option></select></label></div>
+    <nav class="chip-row" aria-label="Filtrar catálogo por gênero"><a class="chip ${!genre ? 'active' : ''}" href="#catalogo${query ? '?q=' + encodeURIComponent(query) : ''}" ${!genre ? 'aria-current="true"' : ''}>Todos</a>${genres.map(value => `<a class="chip ${genre === value ? 'active' : ''}" href="#catalogo?genero=${encodeURIComponent(value)}${query ? '&q=' + encodeURIComponent(query) : ''}" ${genre === value ? 'aria-current="true"' : ''}>${value}</a>`).join('')}</nav>
+    <p class="results-count">${items.length} ${items.length === 1 ? 'livro encontrado' : 'livros encontrados'}${filters.format !== 'Todos' && filters.format !== 'Físico' ? ' · Este catálogo utiliza edições físicas.' : ''}</p>
+    ${items.length ? bookGrid(items, 'catalog-grid') : emptyState('Nenhum livro por aqui', 'Tente outro título, autor ou limpe os filtros para encontrar uma nova história.', 'search', 'Limpar busca e filtros', 'catalogo?limpar=1')}${priceCaption()}`;
+}
+
+
+function render(options = {}){
+ const {params} = getRoute();
+ if(params.has('limpar')){ filters = {genres: [], price: 200, rating: false, format: 'Todos'}; history.replaceState(null, '', 'catalogo.html'); params.delete('limpar'); }
+ main.innerHTML = pageLinks(catalogView(params));
+ document.title = (main.querySelector('h1')?.textContent || 'Catálogo') + ' · Lume';
+ updateShell();
+ if(!options.keepScroll){window.scrollTo({top: 0, behavior: 'instant'}); if(options.focus)main.focus({preventScroll:true});}
+}
+
+let undoState = null;
+let undoTimer;
+
+document.addEventListener('click', async event => {
+    const button = event.target.closest('[data-action]');
+    if(!button || button.disabled) return;
+    const { action, id } = button.dataset;
+    if(action === 'favorite'){
+        const selected = state.favorites.includes(id);
+        if(selected) state.favorites = state.favorites.filter(value => value !== id);
+        else state.favorites.push(id);
+        saveState();
+        if(getRoute().parts[0] === 'favoritos') render({ keepScroll: true });
+        else document.querySelectorAll(`[data-action="favorite"][data-id="${id}"]`).forEach(element => {
+            element.setAttribute('aria-pressed', String(!selected));
+            element.setAttribute('aria-label', `${selected ? 'Adicionar' : 'Remover'} ${getBook(id).title} ${selected ? 'aos' : 'dos'} favoritos`);
+        });
+        toast(selected ? 'Livro removido dos favoritos.' : 'Uma história guardada para depois.');
+    }
+    if(action === 'add') addToCart(id);
+
+
+
+
+    if(action === 'filters') openFilters();
+    if(action === 'close-filters') closeDialog(filterDialog);
+
+
+
+
+
+
+
+
+
+});
+
+document.addEventListener('submit', event => {
+    const form = event.target;
+    const type = form.dataset.form;
+    if(!type) return;
+    event.preventDefault();
+    const data = new FormData(form);
+    if(type === 'search'){
+        const query = String(data.get('q') || '').trim();
+        filters = { genres: [], price: 200, rating: false, format: 'Todos' };
+        navigate('catalogo' + (query ? '?q=' + encodeURIComponent(query) : ''));
+    }
+
+
+
+
+
+
+});
+
+document.querySelector('#filter-form')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    filters = { genres: data.getAll('genre'), price: Number(data.get('price')), rating: data.has('rating'), format: String(data.get('format')) };
+    closeDialog(filterDialog);
+    render({ focus: true });
+});
+
+document.querySelector('#filter-form')?.addEventListener('reset', () => {
+    window.setTimeout(() => {
+        document.querySelectorAll('#filter-genres input').forEach(input => input.checked = false);
+        document.querySelector('#max-price').value = 200;
+        document.querySelector('#price-output').textContent = 'R$ 200';
+        document.querySelector('#filter-form').elements.rating.checked = false;
+        document.querySelector('#filter-form').elements.format.value = 'Todos';
+    }, 0);
+});
+
+document.querySelector('#max-price')?.addEventListener('input', event => {
+    document.querySelector('#price-output').textContent = money(Number(event.target.value) * 100);
+});
+
+document.addEventListener('change', event => {
+    if(event.target.id === 'book-sort'){
+        sort = event.target.value;
+        render({ keepScroll: true });
+        document.querySelector('#book-sort')?.focus({ preventScroll: true });
+    }
+});
+
+for(const dialog of [filterDialog, reviewDialog].filter(Boolean)){
+    dialog.addEventListener('close', () => document.body.classList.remove('dialog-open'));
+    dialog.addEventListener('click', event => {
+        const bounds = dialog.getBoundingClientRect();
+        if(event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) closeDialog(dialog);
+    });
+}
+
+
+render();

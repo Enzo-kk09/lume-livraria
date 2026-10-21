@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#63253e">
+    <meta name="description" content="Lume: livros que te acompanham em todas as histórias. Explore o catálogo e encontre sua próxima leitura.">
+    <title>Cupons · Lume</title>
+    <link rel="icon" href="imagens/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <script src="cupons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <div class="announcement">
+        <p><svg aria-hidden="true"><use href="imagens/icons.svg#truck"></use></svg> Uma boa história vai até você. <strong>Frete grátis a partir de R$ 99</strong></p>
+    </div>
+    <header class="site-header">
+        <div class="header-inner container">
+            <a class="brand" href="index.html" aria-label="Lume, página inicial">
+                <svg aria-hidden="true"><use href="imagens/icons.svg#brand"></use></svg>
+                <span>Lume<small>LIVROS & BOAS HISTÓRIAS</small></span>
+            </a>
+            <nav class="desktop-nav" aria-label="Navegação principal">
+                <a href="index.html" data-nav="inicio">Início</a>
+                <a href="catalogo.html" data-nav="catalogo">Explorar livros</a>
+                <a href="favoritos.html" data-nav="favoritos">Favoritos</a>
+                <a href="leitura.html" data-nav="leitura">Minha leitura</a>
+            </nav>
+            <div class="header-actions">
+                <a class="icon-button notifications-link" href="notificacoes.html" aria-label="Notificações"><svg aria-hidden="true"><use href="imagens/icons.svg#bell"></use></svg><span class="notification-dot"></span></a>
+                <a class="icon-button" href="carrinho.html" aria-label="Carrinho"><svg aria-hidden="true"><use href="imagens/icons.svg#bag"></use></svg><span class="cart-badge" id="cart-count" hidden>0</span></a>
+                <a class="profile-link" href="perfil.html" aria-label="Meu perfil"><span class="avatar avatar-small" aria-hidden="true">A</span><span class="profile-label">Minha conta</span></a>
+            </div>
+        </div>
+    </header>
+    <main class="container main-content" id="conteudo" tabindex="-1"><header class="center-heading"><svg aria-hidden="true"><use href="imagens/icons.svg#ticket"></use></svg><span class="eyebrow">Mais histórias na sua estante</span><h1>Você tem cupons!</h1><p>Aproveite para ler ainda mais.</p></header><section class="coupon-grid" aria-label="Seus cupons"><article class="coupon"><div><h2>BEMVINDO</h2><strong>10% OFF</strong><p>Para sua próxima simulação.</p></div><button class="button button-primary" type="button" data-action="copy-coupon" data-code="BEMVINDO">Copiar</button></article><article class="coupon"><div><h2>LIVRO10</h2><strong>10% OFF</strong><p>Em todos os livros do catálogo.</p></div><button class="button button-primary" type="button" data-action="copy-coupon" data-code="LIVRO10">Copiar</button></article></section><p class="intro-note center-heading">Cupons demonstrativos, exclusivos deste protótipo. Não são válidos nas lojas pesquisadas e não são cumulativos.</p><div class="center-heading"><a class="button button-primary" href="catalogo.html">Encontrar minha próxima leitura<svg aria-hidden="true"><use href="imagens/icons.svg#arrow"></use></svg></a></div></main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <a class="footer-brand" href="index.html">Lume<span>Livros que te acompanham em todas as histórias.</span></a>
+            <nav aria-label="Links do rodapé"><a href="suporte.html">Ajuda e suporte</a><a href="cupons.html">Cupons e descontos</a><a href="fontes.html">Fontes e preços</a></nav>
+            <p>Feito para quem ama virar a página.<small>Protótipo demonstrativo · sem vendas ou pagamentos reais.</small></p>
+        </div>
+    </footer>
+    <nav class="bottom-nav" aria-label="Navegação no celular">
+        <a href="index.html" data-mobile-nav="inicio"><svg aria-hidden="true"><use href="imagens/icons.svg#home"></use></svg><span>Início</span></a>
+        <a href="catalogo.html" data-mobile-nav="catalogo"><svg aria-hidden="true"><use href="imagens/icons.svg#grid"></use></svg><span>Categorias</span></a>
+        <a href="favoritos.html" data-mobile-nav="favoritos"><svg aria-hidden="true"><use href="imagens/icons.svg#heart"></use></svg><span>Favoritos</span></a>
+        <a href="carrinho.html" data-mobile-nav="carrinho"><svg aria-hidden="true"><use href="imagens/icons.svg#bag"></use></svg><span>Carrinho</span><span class="mobile-cart-dot" hidden></span></a>
+        <a href="perfil.html" data-mobile-nav="perfil"><svg aria-hidden="true"><use href="imagens/icons.svg#user"></use></svg><span>Perfil</span></a>
+    </nav>
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript-message">Ative o JavaScript do navegador para explorar o catálogo da Lume.</p></noscript>
+</body>
+</html>
