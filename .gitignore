@@ -1,9 +1,0 @@
-.DS_Store
-node_modules/
-*.tar.gz
-.openai/
-.vercel/
-.env
-.env.*
-!.env.example
-*.zip
