@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página perfil.html.
 
 
 const books = [

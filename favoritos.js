@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página favoritos.html.
 
 
 const books = [

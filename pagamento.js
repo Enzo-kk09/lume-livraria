@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página pagamento.html.
 
 
 const books = [

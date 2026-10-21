@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página cupons.html.
 
 
 const books = [

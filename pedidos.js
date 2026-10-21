@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página pedidos.html.
 
 
 const books = [

@@ -1,6 +1,5 @@
 'use strict';
 
-// Comportamento da página confirmado.html.
 
 
 const books = [
